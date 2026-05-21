@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: abcd-ppp-deployment
+  name: abcd-fe-deployment
   labels:
-    app: abcd-ppp
+    app: abcd-fe
 spec:
-  replicas: 2  # 무중단 배포 실습을 위해 서버 2대를 항상 유지합니다.
+  replicas: 2
   selector:
     matchLabels:
-      app: abcd-ppp
+      app: abcd-fe
   template:
     metadata:
       labels:
-        app: abcd-ppp
+        app: abcd-fe
     spec:
       containers:
-      - name: abcd-ppp-container
-        image: my-app:v1  # 우리가 Minikube 도커 엔진에 빌드해 둔 바로 그 이미지 이름!
-        imagePullPolicy: Never # 중요: 외부 도커 허브로 가지 말고 로컬 가상 세계에서 이미지를 찾으라는 옵션
+      - name: abcd-fe-container
+        # ⚠️ 이미지 주소는 깃허브 아이디 소문자 규격(cubickim)과 새 프로젝트명(abcd_fe)을 반영합니다.
+        image: ghcr.io/cubickim/abcd_fe:latest
         ports:
-        - containerPort: 8080 # 스프링 부트가 사용하는 기본 포트
+        - containerPort: 8080

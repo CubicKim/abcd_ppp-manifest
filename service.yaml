@@ -1,12 +1,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: abcd-ppp-service
+  name: abcd-fe-service
 spec:
-  type: NodePort # 외부 내 PC 브라우저에서 접근할 수 있도록 문을 열어주는 타입
+  type: NodePort
   selector:
-    app: abcd-ppp # 위의 deployment.yaml에 적은 app 이름과 똑같이 맞춰서 연결합니다.
+    app: abcd-fe
   ports:
-  - port: 80
-    targetPort: 8080
-    nodePort: 31000 # 내 PC 브라우저에서 http://localhost:31000 으로 접속하겠다는 의미
+    - port: 8080
+      targetPort: 8080
+      nodePort: 30080 # 미니쿠베 외부 접속용 포트
