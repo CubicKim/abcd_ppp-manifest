@@ -17,6 +17,6 @@ spec:
       containers:
       - name: abcd-fe-container
         # ⚠️ 이미지 주소는 깃허브 아이디 소문자 규격(cubickim)과 새 프로젝트명(abcd_fe)을 반영합니다.
-        image: ghcr.io/cubickim/abcd_fe:10
+        image: ghcr.io/cubickim/abcd_fe:11
         ports:
         - containerPort: 8080
