@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: abcd-be-deployment
+  labels:
+    app: abcd-be
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: abcd-be
+  template:
+    metadata:
+      labels:
+        app: abcd-be
+    spec:
+      containers:
+      - name: abcd-be-container
+        image: ghcr.io/cubickim/abcd_be:latest
+        ports:
+        - containerPort: 8081
