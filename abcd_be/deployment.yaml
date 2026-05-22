@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
       - name: abcd-be-container
-        image: ghcr.io/cubickim/abcd_be:latest
+        image: ghcr.io/cubickim/abcd_be:3
         ports:
         - containerPort: 8081
