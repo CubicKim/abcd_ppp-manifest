@@ -19,3 +19,6 @@ spec:
         image: ghcr.io/cubickim/abcd_be:4
         ports:
         - containerPort: 8081
+        env:
+        - name: SPRING_PROFILES_ACTIVE
+          value: "dev"
