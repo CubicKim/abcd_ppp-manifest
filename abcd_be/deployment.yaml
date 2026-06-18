@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: abcd-be-container
-        image: ghcr.io/cubickim/abcd_be:8
+        image: ghcr.io/cubickim/abcd_be:9
         ports:
         - containerPort: 8081
         env:
