@@ -1,9 +1,50 @@
+# 1. 영구 저장소 정의 (PV)
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: abcd-db-pv
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 2Gi # 용량 설정
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/data/abcd-db" # 미니쿠베(우분투) 내부의 물리 데이터 저장 경로
+---
+# 2. 저장소 소유권 주장 (PVC)
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: abcd-db-pvc
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi # PV 용량과 매칭
+---
+# 3. 데이터베이스 서비스 (Service)
+apiVersion: v1
+kind: Service
+metadata:
+  name: abcd-db-service
+spec:
+  type: ClusterIP
+  ports:
+    - port: 5432
+      targetPort: 5432
+  selector:
+    app: abcd-db
+---
+# 4. 데이터베이스 배포 명세 (Deployment)
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: abcd-db
-  labels:
-    app: abcd-db
 spec:
   replicas: 1
   selector:
@@ -15,24 +56,23 @@ spec:
         app: abcd-db
     spec:
       containers:
-      - name: postgres
-        image: postgres:15
-        ports:
-        - containerPort: 5432
-        env:
-        - name: POSTGRES_DB
-          value: "abcd_db"
-        - name: POSTGRES_PASSWORD
-          value: "cubicinc"
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: abcd-db-service # 이름은 기존과 똑같이 유지해서 백엔드가 그대로 바라볼 수 있게 합니다.
-spec:
-  type: ClusterIP # 외부망(ExternalName)을 버리고, 쿠버네티스 내부 전용망으로 변경합니다.
-  ports:
-  - port: 5432
-    targetPort: 5432
-  selector:
-    app: abcd-db
+        - name: postgres
+          image: postgres:15 # 사용 중이신 버전으로 명시 (가급적 최신 stable 권장)
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: abcd_db
+            - name: POSTGRES_USER
+              value: postgres
+            - name: POSTGRES_PASSWORD
+              value: cubicinc # 기존 비밀번호 그대로 유지
+          # 🎯 4-1. 컨테이너 내부의 어떤 폴더를 영구 저장소랑 연결할지 정의
+          volumeMounts:
+            - name: abcd-db-storage
+              mountPath: /var/lib/postgresql/data # 포스트그레 데이터가 쌓이는 순정 경로
+      # 🎯 4-2. 위에서 정의한 PVC를 이 파드에 장착
+      volumes:
+        - name: abcd-db-storage
+          persistentVolumeClaim:
+            claimName: abcd-db-pvc
